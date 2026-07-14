@@ -1,2 +1,2 @@
-# Placement-Portal-Application-
-MAD-I Project - Placement Portal Application 
+#Trekking Management App V1
+MAD-I Project - Trekking Management App V1
