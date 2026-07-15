@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Trekker Dashboard - Trekora{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- User sidebar options -->
+    <div class="col-md-3 mb-4">
+        <div class="neo-box bg-white text-center">
+            <h4 class="mb-3"><span class="neo-badge bg-yellow">Welcome!</span></h4>
+            <p class="fw-bold mb-1 fs-5 text-dark">{{ session.get('name') }}</p>
+            <p class="text-muted small mb-4">{{ session.get('email') }}</p>
+            
+            <div class="d-flex flex-column gap-2">
+                <a href="/user?tab=browse" class="neo-btn {% if active_tab == 'browse' %}neo-btn-primary{% endif %} w-100 justify-content-start">🧭 Browse Treks</a>
+                <a href="/user?tab=bookings" class="neo-btn {% if active_tab == 'bookings' %}neo-btn-primary{% endif %} w-100 justify-content-start">🎫 My Bookings</a>
+                <a href="/user?tab=history" class="neo-btn {% if active_tab == 'history' %}neo-btn-primary{% endif %} w-100 justify-content-start">📜 Trekking History</a>
+                <a href="/user?tab=profile" class="neo-btn {% if active_tab == 'profile' %}neo-btn-primary{% endif %} w-100 justify-content-start">👤 Edit Profile</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- User main views -->
+    <div class="col-md-9">
+        {% if active_tab == 'browse' %}
+            <!-- BROWSE TREKS -->
+            <div class="neo-box bg-white">
+                <h3 class="mb-4"><span class="neo-badge bg-purple">Available Treks</span></h3>
+                
+                <!-- Search & Filters -->
+                <form action="/user" method="GET" class="row g-3 mb-4">
+                    <input type="hidden" name="tab" value="browse">
+                    <div class="col-md-4">
+                        <label for="difficulty" class="neo-form-label">Difficulty</label>
+                        <select id="difficulty" name="difficulty" class="neo-form-control" style="appearance: auto;">
+                            <option value="">All Difficulties</option>
+                            <option value="Easy" {% if difficulty_filter == 'Easy' %}selected{% endif %}>Easy</option>
+                            <option value="Moderate" {% if difficulty_filter == 'Moderate' %}selected{% endif %}>Moderate</option>
+                            <option value="Hard" {% if difficulty_filter == 'Hard' %}selected{% endif %}>Hard</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="location" class="neo-form-label">Location</label>
+                        <input type="text" id="location" name="location" class="neo-form-control" placeholder="e.g. Nepal, Uttarakhand" value="{{ location_filter or '' }}">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="neo-btn neo-btn-primary w-100 py-2">Apply Filters</button>
+                    </div>
+                </form>
+
+                <!-- Treks grid -->
+                {% if treks %}
+                    <div class="row">
+                        {% for t in treks %}
+                            <div class="col-md-6 mb-4">
+                                <div class="neo-box bg-white h-100 d-flex flex-column justify-content-between neo-box-hover">
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h4 class="mb-0">{{ t.name }}</h4>
+                                            <span class="neo-badge badge-open">{{ t.difficulty }}</span>
+                                        </div>
+                                        <p class="text-muted fw-bold mb-2">📍 {{ t.location }}</p>
+                                        <p class="small mb-3 text-dark">{{ t.description[:120] }}...</p>
+                                        
+                                        <ul class="list-group list-group-flush small mb-3">
+                                            <li class="list-group-item bg-transparent px-0 py-1 d-flex justify-content-between fw-semibold">
+                                                <span>Duration:</span> <span>{{ t.duration }} Days</span>
+                                            </li>
+                                            <li class="list-group-item bg-transparent px-0 py-1 d-flex justify-content-between fw-semibold">
+                                                <span>Slots Available:</span> <span>{{ t.available_slots }} / {{ t.slots }}</span>
+                                            </li>
+                                            <li class="list-group-item bg-transparent px-0 py-1 d-flex justify-content-between fw-semibold">
+                                                <span>Start Date:</span> <span>{{ t.start_date }}</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="mt-2 d-flex gap-2">
+                                        <a href="/trek/{{ t.id }}" class="neo-btn bg-yellow flex-grow-1 text-center py-2">Details</a>
+                                        {% if t.available_slots > 0 and t.status == 'Open' %}
+                                            <a href="/trek/{{ t.id }}/book" class="neo-btn neo-btn-success flex-grow-1 text-center py-2" onclick="return confirm('Do you want to book this trek?');">Book Now</a>
+                                        {% else %}
+                                            <button class="neo-btn bg-light text-muted flex-grow-1 py-2" disabled>Full / Closed</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted fw-semibold">No approved open treks match your criteria.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if active_tab == 'bookings' %}
+            <!-- MY BOOKINGS -->
+            <div class="neo-box bg-white">
+                <h3 class="mb-4"><span class="neo-badge bg-purple">My Active Bookings</span></h3>
+                {% if bookings %}
+                    <div class="neo-table-container">
+                        <table class="neo-table">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Trek Name</th>
+                                    <th>Booking Date</th>
+                                    <th>Trek Dates</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for b in bookings %}
+                                    <tr>
+                                        <td>B{{ "%03d" | format(b.id) }}</td>
+                                        <td>{{ b.trek.name }}</td>
+                                        <td>{{ b.booking_date.split(' ')[0] }}</td>
+                                        <td>{{ b.trek.start_date }} to {{ b.trek.end_date }}</td>
+                                        <td>
+                                            <span class="neo-badge bg-blue">{{ b.status }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-1">
+                                                <a href="/trek/{{ b.trek.id }}" class="neo-btn bg-yellow py-1 px-3">Details</a>
+                                                {% if b.status == 'Booked' and b.trek.status in ['Open', 'Closed', 'Approved'] %}
+                                                    <a href="/booking/cancel/{{ b.id }}" class="neo-btn bg-pink py-1 px-3" onclick="return confirm('Are you sure you want to cancel this booking?');">Cancel</a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted fw-semibold">You have no active bookings. Go to "Browse Treks" to book one!</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if active_tab == 'history' %}
+            <!-- TREKKING HISTORY -->
+            <div class="neo-box bg-white">
+                <h3 class="mb-4"><span class="neo-badge bg-purple">Trekking History</span></h3>
+                {% if history %}
+                    <div class="neo-table-container">
+                        <table class="neo-table">
+                            <thead>
+                                <tr>
+                                    <th>Trek Name</th>
+                                    <th>Trek Dates</th>
+                                    <th>Booking Status</th>
+                                    <th>Completed On</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for b in history %}
+                                    <tr>
+                                        <td>{{ b.trek.name }}</td>
+                                        <td>{{ b.trek.start_date }} to {{ b.trek.end_date }}</td>
+                                        <td>
+                                            {% if b.status == 'Cancelled' %}
+                                                <span class="neo-badge bg-pink">Cancelled</span>
+                                            {% else %}
+                                                <span class="neo-badge bg-green">Completed</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ b.trek.end_date if b.status == 'Completed' else '-' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted fw-semibold">No completed or cancelled treks in your history.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if active_tab == 'profile' %}
+            <!-- EDIT PROFILE -->
+            <div class="neo-box bg-white">
+                <h3 class="mb-4"><span class="neo-badge bg-purple">Edit Profile</span></h3>
+                <form action="/user/profile" method="POST">
+                    <div class="neo-form-group">
+                        <label for="profile_name" class="neo-form-label">Full Name</label>
+                        <input type="text" id="profile_name" name="name" class="neo-form-control" value="{{ user_profile.name }}" required>
+                    </div>
+                    
+                    <div class="neo-form-group">
+                        <label for="profile_email" class="neo-form-label">Email Address (Cannot be changed)</label>
+                        <input type="email" id="profile_email" class="neo-form-control bg-light" value="{{ user_profile.email }}" readonly>
+                    </div>
+
+                    <div class="neo-form-group">
+                        <label for="profile_contact" class="neo-form-label">Contact Details (Phone Number)</label>
+                        <input type="text" id="profile_contact" name="contact" class="neo-form-control" value="{{ user_profile.contact or '' }}" required>
+                    </div>
+
+                    <button type="submit" class="neo-btn neo-btn-success mt-3 w-100 py-2 fs-5">Update Profile</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

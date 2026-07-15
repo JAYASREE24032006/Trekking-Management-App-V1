@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Trekora{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="neo-box bg-white">
+            <h2 class="text-center mb-4"><span class="neo-badge bg-blue px-3 py-2 fs-5">Register</span></h2>
+            
+            <form action="/register" method="POST" autocomplete="off">
+                <div class="neo-form-group">
+                    <label for="name" class="neo-form-label">Full Name</label>
+                    <input type="text" id="name" name="name" class="neo-form-control" placeholder="John Doe" required>
+                </div>
+
+                <div class="neo-form-group">
+                    <label for="email" class="neo-form-label">Email Address</label>
+                    <input type="email" id="email" name="email" class="neo-form-control" placeholder="john@example.com" autocomplete="off" required>
+                </div>
+                
+                <div class="neo-form-group">
+                    <label for="contact" class="neo-form-label">Contact Details (Phone Number)</label>
+                    <input type="text" id="contact" name="contact" class="neo-form-control" placeholder="9876543210" required>
+                </div>
+
+                <div class="neo-form-group">
+                    <label for="role" class="neo-form-label">I am a...</label>
+                    <select id="role" name="role" class="neo-form-control" required style="appearance: auto;">
+                        <option value="" disabled selected>-- Select Role --</option>
+                        <option value="user">User (Trekker)</option>
+                        <option value="staff">Trek Staff</option>
+                    </select>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 neo-form-group">
+                        <label for="password" class="neo-form-label">Password</label>
+                        <input type="password" id="password" name="password" class="neo-form-control" placeholder="••••••••" autocomplete="new-password" required>
+                    </div>
+                    <div class="col-md-6 neo-form-group">
+                        <label for="confirm_password" class="neo-form-label">Confirm Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" class="neo-form-control" placeholder="••••••••" autocomplete="new-password" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="neo-btn neo-btn-success w-100 py-2 fs-5 mt-3">Register</button>
+            </form>
+            
+            <div class="text-center mt-4">
+                <p class="mb-0 fw-semibold">Already have an account? <a href="/login" class="text-decoration-underline text-dark">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to Trekora - Trekking Management{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-9 text-center">
+        <!-- Big Hero Logo Block -->
+        <div class="neo-box bg-pink py-5 mb-5 highlight-flash position-relative" style="animation: terminalFloat 3s ease-in-out infinite;">
+            <div class="mb-3">
+                <span style="font-size: 5rem; filter: drop-shadow(4px 4px 0 #1E293B);">🥾</span>
+            </div>
+            <h1 class="display-3 fw-bold mb-3">
+                <span class="bg-yellow px-3 py-1 border border-4 border-dark me-2 d-inline-block" style="transform: rotate(-2deg); border-radius: 8px; box-shadow: 5px 5px 0 var(--black);">TREK</span><span class="bg-blue px-3 py-1 border border-4 border-dark d-inline-block" style="transform: rotate(3deg); border-radius: 8px; box-shadow: 5px 5px 0 var(--black);">ORA</span>
+            </h1>
+            <p class="fs-4 fw-semibold text-dark mt-4">The ultimate Neobrutalist platform for Adventure organizations, guides, and trekkers.</p>
+        </div>
+
+        <!-- Call to Actions -->
+        <div class="neo-box bg-white p-4 mb-5">
+            <h3 class="mb-4">Begin Your Adventure</h3>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                {% if session.get('user_id') %}
+                    {% if session.get('role') == 'admin' %}
+                        <a href="/admin" class="neo-btn neo-btn-primary px-5 py-3 fs-5">📊 Go to Admin Dashboard</a>
+                    {% elif session.get('role') == 'staff' %}
+                        <a href="/staff" class="neo-btn neo-btn-success px-5 py-3 fs-5">🥾 Go to Staff Dashboard</a>
+                    {% else %}
+                        <a href="/user" class="neo-btn neo-btn-warning px-5 py-3 fs-5">🧭 Browse Available Treks</a>
+                    {% endif %}
+                {% else %}
+                    <a href="/login" class="neo-btn neo-btn-primary px-5 py-3 fs-5">🔑 Sign In</a>
+                    <a href="/register" class="neo-btn neo-btn-success px-5 py-3 fs-5">📝 Register Account</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="row g-4 text-start">
+            <div class="col-md-4">
+                <div class="neo-box bg-yellow h-100">
+                    <h4 class="fw-bold mb-3">👤 For Trekkers</h4>
+                    <ul class="list-unstyled fw-semibold small">
+                        <li class="mb-2">✓ Browse approved trek routes</li>
+                        <li class="mb-2">✓ Filter by location and difficulty</li>
+                        <li class="mb-2">✓ Book instantly if slots are available</li>
+                        <li class="mb-2">✓ View complete history & profile</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="neo-box bg-blue h-100">
+                    <h4 class="fw-bold mb-3">🧑‍💼 For Trek Staff</h4>
+                    <ul class="list-unstyled fw-semibold small">
+                        <li class="mb-2">✓ Registration & profile setup</li>
+                        <li class="mb-2">✓ View assigned treks by Admin</li>
+                        <li class="mb-2">✓ Manage slots & update status</li>
+                        <li class="mb-2">✓ Track trek hikers list</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="neo-box bg-green h-100">
+                    <h4 class="fw-bold mb-3">🛡️ For Admins</h4>
+                    <ul class="list-unstyled fw-semibold small">
+                        <li class="mb-2">✓ Create & edit trek details</li>
+                        <li class="mb-2">✓ Approve or blacklist guides</li>
+                        <li class="mb-2">✓ Deactivate or blacklist hikers</li>
+                        <li class="mb-2">✓ General stats & unified search</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
