@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Dashboard - Trekora{% endblock %}
+
+{% block content %}
+{% if managing_trek %}
+    <!-- STAFF - MANAGE TREK VIEW -->
+    <div class="neo-box bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><span class="neo-badge bg-yellow">Manage Trek: {{ managing_trek.name }}</span></h2>
+            <a href="/staff" class="neo-btn">← Back to Dashboard</a>
+        </div>
+
+        <div class="row mb-4">
+            <!-- Trek Info Form -->
+            <div class="col-md-6">
+                <div class="neo-box bg-white h-100 mb-0">
+                    <h4 class="mb-3">Update Trek Info</h4>
+                    <form action="/staff/trek/update/{{ managing_trek.id }}" method="POST">
+                        <div class="neo-form-group">
+                            <label class="neo-form-label">Location</label>
+                            <input type="text" class="neo-form-control bg-light" value="{{ managing_trek.location }}" readonly>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 neo-form-group">
+                                <label for="slots" class="neo-form-label">Total Slots</label>
+                                <input type="number" id="slots" name="slots" class="neo-form-control" value="{{ managing_trek.slots }}" min="{{ managing_trek.slots - managing_trek.available_slots }}" required>
+                                <small class="text-muted">Cannot be less than booked slots ({{ managing_trek.slots - managing_trek.available_slots }}).</small>
+                            </div>
+                            <div class="col-6 neo-form-group">
+                                <label class="neo-form-label">Available Slots</label>
+                                <input type="text" class="neo-form-control bg-light" value="{{ managing_trek.available_slots }}" readonly>
+                            </div>
+                        </div>
+                        <div class="neo-form-group">
+                            <label for="status" class="neo-form-label">Trek Status</label>
+                            <select id="status" name="status" class="neo-form-control" style="appearance: auto;" required>
+                                <option value="Open" {% if managing_trek.status == 'Open' %}selected{% endif %}>Open (Bookings allowed)</option>
+                                <option value="Closed" {% if managing_trek.status == 'Closed' %}selected{% endif %}>Closed (Bookings blocked)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="neo-btn neo-btn-success mt-2 w-100">Save Trek Settings</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Trek Quick Info & State Controls -->
+            <div class="col-md-6">
+                <div class="neo-box bg-white h-100 mb-0 d-flex flex-column justify-content-between">
+                    <div>
+                        <h4 class="mb-3">Trek Schedule Details</h4>
+                        <ul class="list-group list-group-flush fw-semibold">
+                            <li class="list-group-item d-flex justify-content-between bg-transparent px-0">
+                                <span>Duration:</span> <span>{{ managing_trek.duration }} Days</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between bg-transparent px-0">
+                                <span>Start Date:</span> <span>{{ managing_trek.start_date }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between bg-transparent px-0">
+                                <span>End Date:</span> <span>{{ managing_trek.end_date }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between bg-transparent px-0 align-items-center">
+                                <span>Current Status:</span> 
+                                <span class="neo-badge badge-{{ managing_trek.status | lower }}">{{ managing_trek.status }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5 class="mb-3">Lifecycle Progress</h5>
+                        <div class="d-flex gap-2">
+                            {% if managing_trek.status in ['Open', 'Closed', 'Approved'] %}
+                                <a href="/staff/trek/start/{{ managing_trek.id }}" class="neo-btn neo-btn-primary flex-grow-1">Mark as Started</a>
+                            {% elif managing_trek.status == 'Started' %}
+                                <a href="/staff/trek/complete/{{ managing_trek.id }}" class="neo-btn neo-btn-success flex-grow-1">Mark as Completed</a>
+                            {% else %}
+                                <button class="neo-btn bg-light text-muted flex-grow-1" disabled>Completed</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Participants List -->
+        <div class="neo-box bg-white mt-4 mb-0">
+            <h4 class="mb-3">Participants Registered ({{ bookings | length }})</h4>
+            {% if bookings %}
+                <div class="neo-table-container">
+                    <table class="neo-table">
+                        <thead>
+                            <tr>
+                                <th>User Name</th>
+                                <th>Email</th>
+                                <th>Contact</th>
+                                <th>Booking Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in bookings %}
+                                <tr>
+                                    <td>{{ b.user.name }}</td>
+                                    <td>{{ b.user.email }}</td>
+                                    <td>{{ b.user.contact or 'N/A' }}</td>
+                                    <td>{{ b.booking_date }}</td>
+                                    <td>
+                                        {% if b.status == 'Booked' %}
+                                            <span class="neo-badge bg-blue">Booked</span>
+                                        {% elif b.status == 'Cancelled' %}
+                                            <span class="neo-badge bg-pink">Cancelled</span>
+                                        {% else %}
+                                            <span class="neo-badge bg-green">Completed</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted fw-semibold">No participants have registered for this trek yet.</p>
+            {% endif %}
+        </div>
+    </div>
+{% else %}
+    <!-- STAFF DASHBOARD OVERVIEW -->
+    <div class="row mb-4">
+        <!-- Stat widgets -->
+        <div class="col-md-4 mb-3">
+            <div class="neo-box bg-blue stat-card">
+                <div class="stat-card-title">Assigned Treks</div>
+                <div class="stat-card-val">{{ total_assigned }}</div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="neo-box bg-green stat-card">
+                <div class="stat-card-title">Total Hikers</div>
+                <div class="stat-card-val">{{ total_hikers }}</div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="neo-box bg-yellow stat-card">
+                <div class="stat-card-title">Open Treks</div>
+                <div class="stat-card-val">{{ total_open }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assigned Treks List -->
+    <div class="neo-box bg-white">
+        <h3 class="mb-4"><span class="neo-badge bg-purple">My Assigned Treks</span></h3>
+        {% if assigned_treks %}
+            <div class="neo-table-container">
+                <table class="neo-table">
+                    <thead>
+                        <tr>
+                            <th>Trek Name</th>
+                            <th>Location</th>
+                            <th>Dates</th>
+                            <th>Slots (Avail)</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in assigned_treks %}
+                            <tr>
+                                <td>{{ t.name }}</td>
+                                <td>{{ t.location }}</td>
+                                <td>{{ t.start_date }} to {{ t.end_date }}</td>
+                                <td>{{ t.slots }} ({{ t.available_slots }})</td>
+                                <td>
+                                    <span class="neo-badge badge-{{ t.status | lower }}">{{ t.status }}</span>
+                                </td>
+                                <td>
+                                    <a href="/staff?manage={{ t.id }}" class="neo-btn bg-yellow py-1 px-3">Manage</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted fw-semibold">You have no treks assigned to you by the Admin at this time.</p>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

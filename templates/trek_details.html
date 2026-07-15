@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}{{ trek.name }} - Trekora{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="/user?tab=browse" class="neo-btn">← Back to Treks</a>
+</div>
+
+<div class="row">
+    <!-- Trek main info -->
+    <div class="col-md-7 mb-4">
+        <div class="neo-box bg-white h-100 d-flex flex-column justify-content-between">
+            <div>
+                <h2 class="mb-3">{{ trek.name }}</h2>
+                
+                <!-- Scenic / decorative layout placeholder styling -->
+                <div class="neo-box bg-purple text-center py-5 mb-4 text-white" style="border-radius: 8px;">
+                    <span style="font-size: 4rem;">🏔️</span>
+                    <h4 class="mt-2 text-dark">Explore the Adventure</h4>
+                </div>
+
+                <h5 class="fw-bold mb-2">Trek Description</h5>
+                <p class="text-dark leading-relaxed">
+                    {{ trek.description or 'No description provided for this trek route. Prepare yourself for an amazing journey with beautiful views and challenging paths.' }}
+                </p>
+            </div>
+            
+            <div class="mt-4">
+                {% if trek.available_slots > 0 and trek.status == 'Open' %}
+                    <a href="/trek/{{ trek.id }}/book" class="neo-btn neo-btn-success w-100 py-3 fs-5" onclick="return confirm('Do you want to book this trek?');">Book This Trek Now</a>
+                {% else %}
+                    <button class="neo-btn bg-light text-muted w-100 py-3 fs-5" disabled>
+                        {% if trek.status != 'Open' %}
+                            Booking Closed (Status: {{ trek.status }})
+                        {% else %}
+                            Sold Out (No Slots Available)
+                        {% endif %}
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Trek details sidebar cards -->
+    <div class="col-md-5 mb-4">
+        <div class="neo-box bg-white h-100">
+            <h4 class="mb-4"><span class="neo-badge bg-yellow">Trek Details</span></h4>
+            
+            <ul class="list-group list-group-flush fw-semibold">
+                <li class="list-group-item d-flex justify-content-between bg-transparent px-0 py-3">
+                    <span class="text-muted">📍 Location</span>
+                    <span>{{ trek.location }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between bg-transparent px-0 py-3">
+                    <span class="text-muted">⚡ Difficulty</span>
+                    <span class="neo-badge bg-blue">{{ trek.difficulty }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between bg-transparent px-0 py-3">
+                    <span class="text-muted">⏱️ Duration</span>
+                    <span>{{ trek.duration }} Days</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between bg-transparent px-0 py-3">
+                    <span class="text-muted">📅 Start Date</span>
+                    <span>{{ trek.start_date }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between bg-transparent px-0 py-3">
+                    <span class="text-muted">📅 End Date</span>
+                    <span>{{ trek.end_date }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between bg-transparent px-0 py-3">
+                    <span class="text-muted">🎟️ Available Slots</span>
+                    <span>{{ trek.available_slots }} / {{ trek.slots }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between bg-transparent px-0 py-3">
+                    <span class="text-muted">🧑‍💼 Assigned Guide</span>
+                    <span>{{ trek.staff.name if trek.staff else 'Unassigned' }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

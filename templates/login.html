@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Trekora{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="neo-box bg-white mt-5">
+            <h2 class="text-center mb-4"><span class="neo-badge bg-yellow px-3 py-2 fs-5">Login</span></h2>
+            
+            <form action="/login" method="POST" autocomplete="off">
+                <div class="neo-form-group">
+                    <label for="email" class="neo-form-label">Email Address</label>
+                    <input type="email" id="email" name="email" class="neo-form-control" placeholder="name@example.com" autocomplete="off" required>
+                </div>
+                
+                <div class="neo-form-group">
+                    <label for="password" class="neo-form-label">Password</label>
+                    <input type="password" id="password" name="password" class="neo-form-control" placeholder="••••••••" autocomplete="new-password" required>
+                </div>
+                
+                <div class="neo-form-group form-check mb-4">
+                    <input type="checkbox" class="form-check-input" id="remember" style="border: 2px solid var(--black); width: 1.25em; height: 1.25em;">
+                    <label class="form-check-label ms-2 fw-semibold" for="remember">Remember me</label>
+                </div>
+                
+                <button type="submit" class="neo-btn neo-btn-primary w-100 py-2 fs-5">Log In</button>
+            </form>
+            
+            <div class="text-center mt-4">
+                <p class="mb-0 fw-semibold">Don't have an account? <a href="/register" class="text-decoration-underline text-dark">Register here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
