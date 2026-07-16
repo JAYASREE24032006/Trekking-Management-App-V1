@@ -8,8 +8,7 @@ It replaces spreadsheets and manual tracking with a robust system for booking sl
 
 ## 🧑‍💻 Student Developer Info
 * **Name:** R. Jayasree
-* **IITM Student ID:** 23f2004869
-* **Email:** [23f2004869@ds.study.iitm.ac.in](mailto:23f2004869@ds.study.iitm.ac.in)
+* **Email:** [jayasree2403206@gmail.com](mailto:jayasree2403206@gmail.com)
 * **LinkedIn:** [jayasree240306](https://www.linkedin.com/in/jayasree240306)
 
 ---
